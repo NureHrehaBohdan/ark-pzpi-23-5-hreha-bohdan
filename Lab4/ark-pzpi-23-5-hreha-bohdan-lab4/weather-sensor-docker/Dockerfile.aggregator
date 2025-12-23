@@ -1,0 +1,13 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir paho-mqtt==1.6.1 requests==2.31.0
+
+COPY aggregator.py .
+
+ENV BROKER_HOST=mosquitto
+ENV BROKER_PORT=1883
+ENV AGGREGATOR_ID=aggregator_001
+
+CMD ["python", "-u", "aggregator.py"]
