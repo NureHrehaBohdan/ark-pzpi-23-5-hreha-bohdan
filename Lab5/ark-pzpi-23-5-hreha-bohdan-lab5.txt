@@ -1,0 +1,280 @@
+﻿МІНІСТЕРСТВО НАУКИ І ОСВІТИ УКРАЇНИ
+
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ
+УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+ЗВІТ
+До лабораторної роботи №5
+з дисципліни «Аналіз та рефакторинг коду»
+
+
+
+
+
+
+
+
+
+
+
+
+
+Виконав: 										      Прийняв:
+ст. гр. ПЗПІ-23-5 ст. 						       викладач катедри ПІ
+Грега Богдан 							Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+
+Харків 2025
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень124.120.1Створено звіт
+
+2 ЗАВДАННЯ
+      
+     Набуття практичних навичок з розгортання програмної системи та перевірки її функціональності. У рамках роботи передбачено розгортання всіх компонентів системи — серверної частини, веб- та мобільного клієнтів, а також IoT-клієнта — із використанням сучасних інструментів контейнеризації та оркестрації, таких як Docker або Kubernetes. Особлива увага приділяється налаштуванню середовища роботи системи, включаючи сервер, базу даних та мережеві параметри, для забезпечення коректної взаємодії всіх компонентів.
+     Наступним завданням є перевірка та налаштування роботи розгорнутої системи. Передбачено тестування стабільності та коректності функціонування серверної частини, IoT-клієнтів, бази даних та API, а також конфігурацію параметрів серверних та клієнтських застосунків для забезпечення надійного обміну даними та інтеграції між компонентами. Останнім етапом є демонстрація функціональності програмної системи, передбаченої розділом Vision & Scope: показ реалізації бізнес-логіки, адміністративних функцій та взаємодії між сервером і клієнтами, а також перевірка всіх необхідних функціональних можливостей для підтвердження їх коректної роботи.
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+      
+     Мета роботи полягала у розгортанні програмної системи для гірськолижного курорту, налаштуванні її компонентів та перевірці коректності роботи. Для реалізації цього завдання була використана контейнеризація за допомогою Docker та Docker Compose, що дозволило ізолювати серверну частину, базу даних PostgreSQL та IoT-клієнт у окремі контейнери, налаштувати мережеву взаємодію між ними і забезпечити можливість конфігурації через змінні середовища.
+     Використання контейнеризації забезпечило кілька ключових переваг: портативність системи між різними операційними системами, ізоляцію залежностей, полегшення розгортання на виробничих серверах та можливість горизонтального масштабування компонентів системи.
+     На першому етапі була створена Docker-структура для бекенду, де застосунок Java/Spring Boot збирається за допомогою Maven і запускається у контейнері (додаток Б.1). Для підключення до бази даних PostgreSQL використовувалися змінні середовища. Для бази даних було налаштовано healthcheck (додаток Б.1), що дозволяє переконатися у готовності контейнера перед запуском додатку.
+     Наступним кроком було налаштування мережі для IoT-компонентів та агрегатора погодних даних. Для цього в docker-compose.yml (додаток Б.2) були визначені сервіси Mosquitto, сенсорів та агрегатора, які об’єднані в окрему bridge-мережу weather-network. Змінні середовища дозволяють гнучко налаштовувати брокер MQTT та REST API для агрегатора. Агрегатор, реалізований на Python, отримує дані з сенсорів через MQTT та публікує результати у REST API бекенду.
+     Крім того, для зручності користувача було реалізовано скрипт налаштування змінних середовища та підняття контейнерів (додаток Б.3). Скрипт дозволяє обирати дефолтні значення або вводити власні. Таким чином, користувач може швидко розгорнути систему та перевірити її функціональність без ручного редагування docker-compose.yml чи Dockerfile.
+     Скрипт також виконує перевірку наявності Docker та Docker Compose на системі користувача, що запобігає помилкам під час розгортання та підвищує зручність установки на нових машинах.
+     В результаті проведених дій система була успішно розгорнута, перевірено роботу серверного додатку, бази даних, IoT-клієнта та агрегатора погодних даних
+     Реалізована архітектура демонструє практичне застосування мікросервісної архітектури та контейнеризації для IoT-систем, забезпечує масштабованість та простоту обслуговування гірськолижного курорту.. 
+     
+
+4 ВИСНОВОК
+
+     У ході виконання лабораторної роботи було здійснено повне розгортання програмної системи «Гірськолижний курорт», включаючи серверну частину, базу даних PostgreSQL, IoT-клієнти та MQTT-брокер. Було налаштовано середовище виконання, перевірено взаємодію компонентів через брокер повідомлень та REST API, а також забезпечено можливість збору, агрегації та збереження даних сенсорів.
+     Додатково були досліджені механізми конфігурації системи через змінні середовища та забезпечена гнучкість у їх налаштуванні користувачем під час первинного запуску. Розгортання системи в Docker-контейнерах продемонструвало ефективність ізоляції компонентів, спрощення конфігурації та масштабованості.
+     Отриманий досвід дозволив закріпити навички налаштування програмного середовища, перевірки функціональності компонентів та документування процесу розгортання, що є важливим етапом при створенні повноцінних програмних систем.
+
+5 ВИКОРИСТАНІ ДЖЕРЕЛА
+
+     1. Spring Boot – офіційна документація. URL: https://spring.io/projects/spring-boot (дата звернення: 24.12.2025)
+     2. Spring Data JPA – офіційна документація. URL: https://spring.io/projects/spring-data-jpa (дата звернення: 24.12.2025)
+     3. PostgreSQL – офіційна документація. URL: https://www.postgresql.org/docs/ (дата звернення: 23.12.2025)
+     4. Docker – офіційна документація. URL: https://docs.docker.com/ (дата звернення: 22.12.2025)
+
+     
+     
+
+ДОДАТОК А
+
+Посилання на відео: https://youtu.be/fbhgWEwk7zM 
+00:00 Вступ
+00:10 Огляд структури серверної частини
+01:31 Огляд скрипту для розгортання серверної частини
+02:17 Огляд скрипту для розгортання іот клієнту
+02:49 Розгортання інформаційної системи
+04:27 Тестування
+
+
+
+
+ДОДАТОК Б
+Фрагменти програмного коду
+
+     Б.1 docker-compose
+ 1  version: '3.9'
+ 2  
+ 3  services:
+ 4    postgres:
+ 5      image: postgres:18-alpine
+ 6      container_name: ski_postgres
+ 7      environment:
+ 8        POSTGRES_USER: postgres
+ 9        POSTGRES_PASSWORD: ${DB_PASSWORD}
+10        POSTGRES_DB: ski_resort
+11      ports:
+12        - "5432:5432"
+13      volumes:
+14        - postgres_data:/var/lib/postgresql/data
+15      healthcheck:
+16        test: ["CMD-SHELL", "pg_isready -U postgres"]
+17        interval: 10s
+18        timeout: 5s
+19        retries: 5
+20  
+21    app:
+22      build:
+23        context: .
+24        dockerfile: Dockerfile
+25      container_name: ski_app
+26      depends_on:
+27        postgres:
+28          condition: service_healthy
+29      environment:
+30        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ski_resort
+31        SPRING_DATASOURCE_USERNAME: postgres
+32        SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+33      ports:
+34        - "8080:8080"
+35  
+36  volumes:
+37    postgres_data:
+
+	Б.2 docker-compose агрегатора
+ 1  version: '3.8'
+ 2  services:
+ 3    mosquitto:
+ 4      image: eclipse-mosquitto:latest
+ 5      container_name: mosquitto-broker
+ 6      ports:
+ 7        - "1883:1883"     
+ 8        - "9001:9001"     
+ 9      volumes:
+10        - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+11        - mosquitto_data:/mosquitto/data
+12        - mosquitto_logs:/mosquitto/log
+13      networks:
+14        - weather-network
+15    mqtt-listener:
+16      image: eclipse-mosquitto:latest
+17      container_name: mqtt-listener
+18      command: mosquitto_sub -h mosquitto -t "sensors/#" -v
+19      depends_on:
+20        - mosquitto
+21      networks:
+22        - weather-network
+23    aggregator-listener:    
+24      image: eclipse-mosquitto:latest
+25      container_name: aggregator-listener
+26      command: mosquitto_sub -h mosquitto -t "aggregator/#" -v
+27      depends_on:
+28        - mosquitto
+29      networks:
+30        - weather-network    
+31    sensor:
+32      build:
+33        context: .
+34        dockerfile: Dockerfile
+35      container_name: weather-sensor-001
+36      environment:
+37        - BROKER_HOST=mosquitto
+38        - BROKER_PORT=1883
+39        - SENSOR_ID=sensor_001
+40      depends_on:
+41        - mosquitto
+42      networks:
+43        - weather-network
+44    sensor2:
+45      build:
+46        context: .
+47        dockerfile: Dockerfile
+48      container_name: weather-sensor-002
+49      environment:
+50        - BROKER_HOST=mosquitto
+51        - BROKER_PORT=1883
+52        - SENSOR_ID=sensor_002
+53      depends_on:
+54        - mosquitto
+55      networks:
+56        - weather-network
+57    aggregator:
+58      build:
+59        context: .
+60        dockerfile: Dockerfile.aggregator
+61      container_name: weather-aggregator-001
+62      environment:
+63        BROKER_HOST: mosquitto
+64        BROKER_PORT: 1883
+65        AGGREGATOR_ID: aggregator_001
+66        INPUT_TOPIC: sensors/+/data
+67        OUTPUT_TOPIC: aggregator/weather/status
+68        REST_API_URL: http://backend:8080/api/aggregator/save
+69        BATCH_INTERVAL: 30
+70      depends_on:
+71        - mosquitto
+72      networks:
+73        - weather-network
+74  volumes:
+75    mosquitto_data:
+76    mosquitto_logs:
+77  networks:
+78    weather-network:
+79      driver: bridge
+
+Б.3 Скрипт для пітдняття іот клієнту 
+1  #!/bin/bash
+ 2  set -e
+ 3  # Docker check 
+ 4  if ! command -v docker &> /dev/null; then
+ 5      echo "Docker is not installed"
+ 6      echo "https://www.docker.com/get-started"
+ 7      exit 1
+ 8  fi
+ 9  if ! command -v docker-compose &> /dev/null; then
+10      echo "docker-compose is not installed"
+11      echo "https://docs.docker.com/compose/install/"
+12      exit 1
+13  fi
+14  ENV_FILE=".env"
+15  # defaults 
+16  DEFAULT_BROKER_HOST="mosquitto"
+17  DEFAULT_BROKER_PORT="1883"
+18  DEFAULT_AGGREGATOR_ID="aggregator_001"
+19  DEFAULT_BATCH_INTERVAL="30"
+20  DEFAULT_REST_API_URL="http://host.docker.internal:8080/api/aggregator/save"
+21  DEFAULT_SENSOR_1_ID="sensor_001"
+22  DEFAULT_SENSOR_2_ID="sensor_002"
+23  # load existing or defaults 
+24  if [ -f "$ENV_FILE" ]; then
+25      source "$ENV_FILE"
+26  else
+27      BROKER_HOST=$DEFAULT_BROKER_HOST
+28      BROKER_PORT=$DEFAULT_BROKER_PORT
+29      AGGREGATOR_ID=$DEFAULT_AGGREGATOR_ID
+30      BATCH_INTERVAL=$DEFAULT_BATCH_INTERVAL
+31      REST_API_URL=$DEFAULT_REST_API_URL
+32      SENSOR_1_ID=$DEFAULT_SENSOR_1_ID
+33      SENSOR_2_ID=$DEFAULT_SENSOR_2_ID
+34  fi
+35  echo " Weather system setup"
+36  echo "Press Enter to accept the default value shown in [brackets]"
+37  read -p "MQTT Broker host [$BROKER_HOST]: " input
+38  BROKER_HOST=${input:-$BROKER_HOST}
+39  read -p "MQTT Broker port [$BROKER_PORT]: " input
+40  BROKER_PORT=${input:-$BROKER_PORT}
+41  read -p "Aggregator ID [$AGGREGATOR_ID]: " input
+42  AGGREGATOR_ID=${input:-$AGGREGATOR_ID}
+43  read -p "Aggregator batch interval [$BATCH_INTERVAL]: " input
+44  BATCH_INTERVAL=${input:-$BATCH_INTERVAL}
+45  read -p "Aggregator REST API URL [$REST_API_URL]: " input
+46  REST_API_URL=${input:-$REST_API_URL}
+47  read -p "Sensor 1 ID [$SENSOR_1_ID]: " input
+48  SENSOR_1_ID=${input:-$SENSOR_1_ID}
+49  read -p "Sensor 2 ID [$SENSOR_2_ID]: " input
+50  SENSOR_2_ID=${input:-$SENSOR_2_ID}
+51  # save to .env
+52  cat > "$ENV_FILE" <<EOL
+53  BROKER_HOST=$BROKER_HOST
+54  BROKER_PORT=$BROKER_PORT
+55  AGGREGATOR_ID=$AGGREGATOR_ID
+56  BATCH_INTERVAL=$BATCH_INTERVAL
+57  REST_API_URL=$REST_API_URL
+58  SENSOR_1_ID=$SENSOR_1_ID
+59  SENSOR_2_ID=$SENSOR_2_ID
+60  EOL
+61  echo ".env file updated"
+62  # start containers 
+63  docker-compose up -d --build
+64  echo "All containers are up"
+65  docker-compose ps
+2
+
+
